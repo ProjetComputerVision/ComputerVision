@@ -20,7 +20,7 @@ objpoints = []  # Points 3D dans le monde réel
 imgpoints = []  # Points 2D dans l'image
 
 # 📌 Chargement des images (mets ici le bon chemin vers tes images)
-images = glob.glob('/Users/corentinjozwiak/Documents/eseo/E4/COMPUTER VISION/Fichiers - checkboard-20250324/*.jpg')
+images = glob.glob('Checkboard/*.jpg')
 
 for fname in images:
     img = cv2.imread(fname)
