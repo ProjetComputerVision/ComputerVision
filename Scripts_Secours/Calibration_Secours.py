@@ -57,6 +57,6 @@ print("\n🔹 Matrice intrinsèque :\n", mtx)
 print("\n🔹 Coefficients de distorsion :\n", dist)
 
 # 📌 Sauvegarde des paramètres
-np.savez("Data/calibration_data.npz", mtx=mtx, dist=dist)
+np.savez("../Data/calibration_data.npz", mtx=mtx, dist=dist)
 
 print("\n✅ Calibration terminée ! Paramètres enregistrés dans 'calibration_data.npz'.")
