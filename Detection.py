@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 
-cap = cv2.VideoCapture('videos/Rugby.mp4')  # Remplacez par le chemin de votre vidéo
+cap = cv2.VideoCapture('Videos_Homographie/Homographie_Rugby.mp4')  # Remplacez par le chemin de votre vidéo
 
 
 if not cap.isOpened():
