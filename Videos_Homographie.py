@@ -3,7 +3,7 @@ import cv2
 import os
 
 
-def warp_video(video_path, output_path, output_size=(800, 480)):
+def warp_video(video_path, output_path, output_size=(1280, 720)):
     """
     Transforme une vidéo en vue de dessus en utilisant l'homographie calculée
 
