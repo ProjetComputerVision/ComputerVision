@@ -35,7 +35,7 @@ while cap.isOpened():
 
     # Afficher l'image d'origine avec le masque appliqué
     cv.imshow('Image avec le masque appliqué', result)
-
+#lkjkn
     # Quitter avec la touche 'q'
     if cv.waitKey(50) & 0xFF == ord('q'):
         break
