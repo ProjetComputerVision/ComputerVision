@@ -27,10 +27,10 @@ Ce plan est conçu pour être suivi séquentiellement. Chaque étape s'appuie su
     -   [x] Utiliser les points d'angle détectés et les dimensions réelles du damier pour calibrer la caméra.
     -   [x] Obtenir les paramètres intrinsèques de la caméra (matrice de la caméra, coefficients de distorsion).
 
--   [ ] **Évaluation de la distorsion :**
-    -   [ ] Visualiser l'effet de la distorsion sur les images du damier.
-    -   [ ] Appliquer la correction de distorsion et évaluer si l'amélioration est significative.
-    -   [ ] Décider s'il est nécessaire de compenser la distorsion pour la suite du projet.
+-   [x] **Évaluation de la distorsion :**
+    -   [x] Visualiser l'effet de la distorsion sur les images du damier.
+    -   [x] Appliquer la correction de distorsion et évaluer si l'amélioration est significative.
+    -   [x] Décider s'il est nécessaire de compenser la distorsion pour la suite du projet.
 
 **III. Homographie**
 
