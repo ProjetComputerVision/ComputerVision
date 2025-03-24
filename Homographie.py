@@ -4,7 +4,7 @@ import os
 
 # Chargement des paramètres intrinsèques de la caméra (si nécessaire)
 try:
-    calib_data = np.load('calibration_data.npz')
+    calib_data = np.load('Data/calibration_data.npz')
     mtx = calib_data['mtx']
     dist = calib_data['dist']
     print("Paramètres de calibration chargés avec succès")
@@ -110,7 +110,7 @@ def main():
     H, H_inverse, pts_image, pts_monde_reel = calculate_homography()
 
     # Sauvegarder l'homographie
-    np.savez("homography_data.npz", H=H, H_inverse=H_inverse,
+    np.savez("Data/homography_data.npz", H=H, H_inverse=H_inverse,
              pts_image=pts_image, pts_monde_reel=pts_monde_reel)
     print("Matrices d'homographie sauvegardées dans homography_data.npz")
 
@@ -141,7 +141,7 @@ def image_to_world(point_image, H=None):
     point_image: tuple (x, y) en pixels
     """
     if H is None:
-        data = np.load("homography_data.npz")
+        data = np.load("Data/homography_data.npz")
         H = data['H']
 
     point = np.array([[[point_image[0], point_image[1]]]], dtype=np.float32)
@@ -155,7 +155,7 @@ def world_to_image(point_reel, H_inverse=None):
     point_reel: tuple (x, y) en cm
     """
     if H_inverse is None:
-        data = np.load("homography_data.npz")
+        data = np.load("Data/homography_data.npz")
         H_inverse = data['H_inverse']
 
     point = np.array([[[point_reel[0], point_reel[1]]]], dtype=np.float32)

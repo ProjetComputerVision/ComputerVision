@@ -60,5 +60,5 @@ print("\nVecteurs de rotation :\n", rvecs)
 print("\nVecteurs de translation :\n", tvecs)
 
 # Sauvegarde
-np.savez("calibration_data.npz", mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
+np.savez("Data/calibration_data.npz", mtx=mtx, dist=dist, rvecs=rvecs, tvecs=tvecs)
 print("\nCalibration enregistrée dans calibration_data.npz")

@@ -9,9 +9,9 @@ __pycache__/
 # Ressources
 /Videos
 /Checkboard
-
+/Data
 #Fichiers à ignorer
-calibration_data.npz
+Data/calibration_data.npz
 
 # Distribution / packaging
 .Python
