@@ -41,9 +41,9 @@ Ce plan est conçu pour être suivi séquentiellement. Chaque étape s'appuie su
 -   [x] **Calcul de l'homographie :**
     -   [x] Utiliser les points de correspondance pour calculer la matrice d'homographie.
 
--   [ ] **Vérification de l'homographie :**
-    -   [ ] Appliquer l'homographie à l'image de référence et vérifier si le plan de la scène est correctement aligné.
-    -   [ ] Appliquer l'homographie à d'autres images de la vidéo et vérifier la cohérence.
+-   [x] **Vérification de l'homographie :**
+    -   [x] Appliquer l'homographie à l'image de référence et vérifier si le plan de la scène est correctement aligné.
+    -   [x] Appliquer l'homographie à d'autres images de la vidéo et vérifier la cohérence.
 
 **IV. Suivi de l'objet**
 
