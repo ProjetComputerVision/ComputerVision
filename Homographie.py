@@ -43,7 +43,7 @@ def calculate_homography():
     return H, H_inverse, pts_image, pts_monde_reel
 
 
-def test_homography(video_path, H, H_inverse, pts_image, pts_monde_reel):
+def visualize_homography(video_path, H, H_inverse, pts_image, pts_monde_reel):
     # Ouvrir la vidéo
     cap = cv2.VideoCapture(video_path)
     if not cap.isOpened():
@@ -128,7 +128,7 @@ def main():
         return
 
     # Tester l'homographie sur la première vidéo
-    test_homography(videos[0], H, H_inverse, pts_image, pts_monde_reel)
+    visualize_homography(videos[0], H, H_inverse, pts_image, pts_monde_reel)
 
     print("\nFonctions disponibles pour utiliser l'homographie:")
     print("1. image_to_world(point_image): Convertit des coordonnées de l'image en coordonnées du monde réel")
