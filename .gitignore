@@ -10,8 +10,8 @@ __pycache__/
 /Videos
 /Checkboard
 /Data
+/Videos_Homographie
 #Fichiers à ignorer
-Data/calibration_data.npz
 
 # Distribution / packaging
 .Python
