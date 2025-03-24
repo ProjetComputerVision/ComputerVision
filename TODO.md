@@ -34,12 +34,12 @@ Ce plan est conçu pour être suivi séquentiellement. Chaque étape s'appuie su
 
 **III. Homographie**
 
--   [ ] **Identification de points de correspondance :**
-    -   [ ] Choisir une image de référence à partir de l'une des vidéos.
-    -   [ ] Identifier manuellement au moins quatre points de correspondance (non colinéaires) entre l'image de référence et le plan réel de la scène (le tableau blanc).
+-   [x] **Identification de points de correspondance :**
+    -   [x] Choisir une image de référence à partir de l'une des vidéos.
+    -   [x] Identifier manuellement au moins quatre points de correspondance (non colinéaires) entre l'image de référence et le plan réel de la scène (le tableau blanc).
 
--   [ ] **Calcul de l'homographie :**
-    -   [ ] Utiliser les points de correspondance pour calculer la matrice d'homographie.
+-   [x] **Calcul de l'homographie :**
+    -   [x] Utiliser les points de correspondance pour calculer la matrice d'homographie.
 
 -   [ ] **Vérification de l'homographie :**
     -   [ ] Appliquer l'homographie à l'image de référence et vérifier si le plan de la scène est correctement aligné.
