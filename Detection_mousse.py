@@ -7,7 +7,7 @@ if not cap.isOpened():
     print("Erreur lors de l'ouverture de la vidéo")
     exit()
 
-# Plages de couleur pour détecter le rouge en HSV
+# Plages de couleur pour détecter le rouge en HSV//COool
 lower_red1 = np.array([0, 50, 50])  # Rouge clair
 upper_red1 = np.array([30, 255, 255])
 
