@@ -232,16 +232,16 @@ for video in videos:
                     break
 
         # Afficher les informations de vitesse
-        cv2.putText(frame, f"Vitesse moyenne: {avg_speed_mps:.2f} m/s", (50, 50),
+        cv2.putText(frame, f"Vitesse moyenne: {avg_speed_mps:.2f} m/s", (40, 50),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-        cv2.putText(frame, f"Vitesse moyenne: {avg_speed_kmh:.1f} km/h", (50, 80),
+        cv2.putText(frame, f"Vitesse moyenne: {avg_speed_kmh:.1f} km/h", (40, 80),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         # Afficher l'angle initial et la vitesse initiale
         if angle_initial is not None and vitesse_initiale is not None:
-            cv2.putText(frame, f"Vitesse initiale: {vitesse_initiale:.2f} m/s", (50, 110),
+            cv2.putText(frame, f"Vitesse initiale: {vitesse_initiale:.2f} m/s", (40, 110),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-            cv2.putText(frame, f"Angle initial: {angle_initial:.2f} degres", (50, 140),
+            cv2.putText(frame, f"Angle initial: {angle_initial:.2f} degres", (40, 140),
                         cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         # Écrire l'image dans le fichier de sortie
