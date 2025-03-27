@@ -12,6 +12,7 @@ __pycache__/
 /Data
 /Videos_Homographie
 /Videos_Detection
+/Videos_Trajectoire
 #Fichiers à ignorer
 
 # Distribution / packaging
