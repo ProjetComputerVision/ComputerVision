@@ -7,7 +7,7 @@ videos = ["Homographie_Mousse.mp4", "Homographie_Rugby.mp4", "Homographie_Tennis
 video_dir = "Videos_Homographie"
 
 # Facteur de conversion pixels -> mètres (ajuste cette valeur selon l'échelle réelle)
-pixel_to_meter = 0.01  # Ex: 1 pixel = 1 cm (0.01 m)
+pixel_to_meter = 2/1280 # Ex: 1 pixel = 1 cm (0.01 m)
 
 # Nombre de frames pour lisser la vitesse
 window_size = 5
@@ -64,6 +64,31 @@ for video in videos:
         for i in range(1, len(centers)):
             cv2.line(frame, centers[i - 1], centers[i], (255, 0, 0), 2)
 
+        # Ajustement et affichage de la parabole sur la trajectoire observée
+        if len(centers) > 8:
+            pts = np.array(centers[-15:], dtype=np.float32)  # Utiliser les 15 derniers points
+            x_vals, y_vals = pts[:, 0], pts[:, 1]
+
+            # Ajustement d'une parabole (modèle quadratique)
+            coeffs = np.polyfit(x_vals, y_vals, 2)  # y = ax^2 + bx + c
+            poly = np.poly1d(coeffs)
+
+            # Générer des points pour tracer la parabole observée
+            x_fit = np.linspace(min(x_vals), max(x_vals), num=50)
+            y_fit = poly(x_fit)
+
+            # Clipper les valeurs pour rester dans l'image
+            height, width, _ = frame.shape
+            x_fit = np.clip(x_fit, 0, width - 1)
+            y_fit = np.clip(y_fit, 0, height - 1)
+
+            # Dessiner la parabole ajustée en ROUGE
+            for i in range(len(x_fit) - 1):
+                cv2.line(frame,
+                         (int(x_fit[i]), int(y_fit[i])),
+                         (int(x_fit[i + 1]), int(y_fit[i + 1])),
+                         (0, 0, 255), 2, cv2.LINE_AA)
+
         # Calcul précis de la vitesse en m/s
         if len(centers) > window_size:
             total_distance = 0
@@ -90,30 +115,21 @@ for video in videos:
 
         # Prédiction de la trajectoire future (modèle quadratique)
         if len(centers) > 8:
-            pts = np.array(centers[-15:], dtype=np.float32)  # Utiliser les 15 derniers points
-            x_vals, y_vals = pts[:, 0], pts[:, 1]
-
-            # Ajustement d'une parabole (modèle quadratique)
-            coeffs = np.polyfit(x_vals, y_vals, 2)  # y = ax^2 + bx + c
-            poly = np.poly1d(coeffs)
-
-            # Générer des points futurs
             x_pred = np.linspace(x_vals[-1], x_vals[-1] + 500, num=50)
             y_pred = poly(x_pred)
 
             # Clipper les valeurs pour rester dans l'image
-            height, width, _ = frame.shape
             x_pred = np.clip(x_pred, 0, width - 1)
             y_pred = np.clip(y_pred, 0, height - 1)
 
-            # Dessiner la trajectoire prédite en VERT (ligne continue)
+            # Dessiner la trajectoire prédite en VERT
             for i in range(len(x_pred) - 1):
                 cv2.line(frame,
                          (int(x_pred[i]), int(y_pred[i])),
                          (int(x_pred[i + 1]), int(y_pred[i + 1])),
                          (0, 255, 0), 2, cv2.LINE_AA)
 
-        cv2.imshow('Tracking avec vitesse et prédiction', frame)
+        cv2.imshow('Tracking avec vitesse, modèle et prédiction', frame)
         if cv2.waitKey(90) & 0xFF == ord('q'):
             break
 
