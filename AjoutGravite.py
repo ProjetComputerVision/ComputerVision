@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import os
+import math
 from scipy.optimize import curve_fit
 
 # Créer le dossier de sortie s'il n'existe pas
@@ -25,6 +26,7 @@ kernel = np.ones((5, 5), np.uint8)
 # Tableau de 200x120 cm dans une vidéo de 1280x720 pixels
 PIXEL_TO_CM_X = 200 / 1280
 PIXEL_TO_CM_Y = 120 / 720
+PIXEL_TO_METER = (PIXEL_TO_CM_X + PIXEL_TO_CM_Y) / 2 / 100  # Moyenne en mètres
 
 
 # Fonction pour ajuster une parabole
@@ -47,6 +49,26 @@ def fit_parabola(centers):
         return None, None
 
 
+def calculate_gravity(params, vitesse_initiale, angle_initial):
+    """Calcule la gravité à partir des paramètres de la parabole et de la vitesse initiale"""
+    if params is None or vitesse_initiale is None or angle_initial is None:
+        return None
+
+    a, b, c = params
+    # Convertir l'angle en radians
+    angle_rad = math.radians(angle_initial)
+
+    # Dans un système où y augmente vers le bas (comme en coordonnées d'image)
+    # La gravité est proportionnelle au coefficient a
+    # g = 2 * |a| * v_0² * cos²(θ) / facteur_échelle
+
+    # Le coefficient a est en pixels, il faut le convertir en mètres
+    # Pour passer de "courbure en pixels" à "accélération en m/s²"
+    g = 2 * abs(a) * (vitesse_initiale ** 2) * (math.cos(angle_rad) ** 2) / PIXEL_TO_METER
+
+    return g
+
+
 def calculate_speed(centers, fps):
     if len(centers) < 2:
         return 0, 0, 0
@@ -65,14 +87,30 @@ def calculate_speed(centers, fps):
     # Conversion en pixels par seconde
     speed_pixels_per_second = avg_speed_pixels_per_frame * fps
 
-    # Conversion en m/s (en utilisant le facteur de conversion moyen)
-    pixel_to_cm = (PIXEL_TO_CM_X + PIXEL_TO_CM_Y) / 2
-    speed_m_per_second = (speed_pixels_per_second * pixel_to_cm) / 100
+    # Conversion en m/s
+    speed_m_per_second = speed_pixels_per_second * PIXEL_TO_METER
 
     # Conversion en km/h
     speed_km_per_hour = speed_m_per_second * 3.6
 
     return speed_pixels_per_second, speed_m_per_second, speed_km_per_hour
+
+
+def calculate_realtime_speed(prev_center, current_center, fps):
+    if prev_center is None or current_center is None:
+        return 0, 0
+
+    dx = current_center[0] - prev_center[0]
+    dy = current_center[1] - prev_center[1]
+    distance_pixels = np.sqrt(dx ** 2 + dy ** 2)
+
+    # Vitesse en m/s
+    speed_m_per_second = distance_pixels * PIXEL_TO_METER * fps
+
+    # Vitesse en km/h
+    speed_km_per_hour = speed_m_per_second * 3.6
+
+    return speed_m_per_second, speed_km_per_hour
 
 
 for video in videos:
@@ -86,6 +124,7 @@ for video in videos:
     fps = cap.get(cv2.CAP_PROP_FPS)
     width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
     height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    frame_time = 1.0 / fps
 
     # Créer l'objet VideoWriter pour la sortie
     output = cv2.VideoWriter(
@@ -132,19 +171,42 @@ for video in videos:
             center = (int(x), int(y))
             centers.append(center)
 
-    # Calculer la vitesse
-    speed_pps, speed_mps, speed_kmh = calculate_speed(centers, fps)
-    print(f"Vitesse moyenne: {speed_pps:.2f} pixels/s, {speed_mps:.2f} m/s, {speed_kmh:.2f} km/h")
+    # Calculer la vitesse moyenne
+    _, avg_speed_mps, avg_speed_kmh = calculate_speed(centers, fps)
+    print(f"Vitesse moyenne: {avg_speed_mps:.2f} m/s, {avg_speed_kmh:.2f} km/h")
+
+    # Calculer l'angle initial et la vitesse initiale
+    angle_initial = None
+    vitesse_initiale = None
+
+    if len(centers) >= 2:
+        dx = (centers[1][0] - centers[0][0]) * PIXEL_TO_METER
+        dy = (centers[1][1] - centers[0][1]) * PIXEL_TO_METER
+        distance = math.sqrt(dx ** 2 + dy ** 2)
+        vitesse_initiale = distance / frame_time
+        angle_initial = math.degrees(math.atan2(-dy, dx))  # Négatif car y augmente vers le bas
+
+    print(f"Angle initial: {angle_initial:.2f} degrés")
+    print(f"Vitesse initiale: {vitesse_initiale:.2f} m/s")
 
     # Ajuster une parabole aux points collectés
     params, x_points = fit_parabola(centers)
 
     # Deuxième passe: dessiner la trajectoire parabolique
-    cap.set(cv2.CAP_PROP_POS_FRAMES, 0)
-
     frame_idx = 0
     while frame_idx < len(all_frames):
         frame = all_frames[frame_idx]
+
+        # Calculer la vitesse en temps réel
+        current_speed_mps = 0
+        current_speed_kmh = 0
+
+        if frame_idx > 0 and frame_idx < len(centers):
+            prev_center = centers[frame_idx - 1] if frame_idx - 1 < len(centers) else None
+            current_center = centers[frame_idx] if frame_idx < len(centers) else None
+
+            if prev_center is not None and current_center is not None:
+                current_speed_mps, current_speed_kmh = calculate_realtime_speed(prev_center, current_center, fps)
 
         # Dessiner les points détectés jusqu'à l'image actuelle
         for i, center in enumerate(centers[:frame_idx + 1]):
@@ -172,26 +234,43 @@ for video in videos:
                     cv2.line(frame, prev_point, point, (0, 255, 255), 2)
                 prev_point = point
 
-            # Prédiction de la trajectoire future (seulement visible après que la balle ait atteint ce point)
-            if frame_idx == len(centers) - 1:  # Seulement à la dernière frame
-                future_x = np.linspace(current_max_x, current_max_x + 200, 50)
-                prev_point = (int(current_max_x), int(parabolic_model(current_max_x, *params)))
+            # Prédiction de la trajectoire future (visible à chaque frame)
+            future_x = np.linspace(current_max_x, width + 200, 100)  # Étendre au-delà de l'image
+            prev_point = (int(current_max_x), int(parabolic_model(current_max_x, *params)))
 
-                for x in future_x:
-                    y = parabolic_model(x, *params)
-                    point = (int(x), int(y))
+            for x in future_x:
+                y = parabolic_model(x, *params)
+                point = (int(x), int(y))
 
-                    if 0 <= point[0] < width and 0 <= point[1] < height:
-                        cv2.line(frame, prev_point, point, (0, 255, 0), 2)
-                        prev_point = point
+                # Dessiner même si le point sort de l'image
+                if prev_point is not None:
+                    cv2.line(frame, prev_point, point, (0, 255, 0), 2)
+                prev_point = point
+
+                # Arrêter si on sort trop de l'image vers le bas
+                if y > height + 100:
+                    break
+
+        # Calculer et afficher la gravité
+        gravity = None
+        if params is not None and vitesse_initiale is not None and angle_initial is not None:
+            gravity = calculate_gravity(params, vitesse_initiale, angle_initial)
+            if gravity is not None:
+                cv2.putText(frame, f"Gravité: {gravity:.2f} m/s²", (40, 170),
+                            cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         # Afficher les informations de vitesse
-        cv2.putText(frame, f"Vitesse: {speed_pps:.1f} px/s", (50, 50),
+        cv2.putText(frame, f"Vitesse moyenne: {avg_speed_mps:.2f} m/s", (40, 50),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-        cv2.putText(frame, f"Vitesse: {speed_mps:.2f} m/s", (50, 80),
+        cv2.putText(frame, f"Vitesse moyenne: {avg_speed_kmh:.1f} km/h", (40, 80),
                     cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
-        cv2.putText(frame, f"Vitesse: {speed_kmh:.1f} km/h", (50, 110),
-                    cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+
+        # Afficher l'angle initial et la vitesse initiale
+        if angle_initial is not None and vitesse_initiale is not None:
+            cv2.putText(frame, f"Vitesse initiale: {vitesse_initiale:.2f} m/s", (40, 110),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
+            cv2.putText(frame, f"Angle initial: {angle_initial:.2f} degres", (40, 140),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         # Écrire l'image dans le fichier de sortie
         output.write(frame)
