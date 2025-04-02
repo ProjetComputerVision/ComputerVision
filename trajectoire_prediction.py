@@ -136,4 +136,4 @@ for video in videos:
     cap.release()
     cv2.destroyAllWindows()
 
-print("Traitement terminé.")
+print("Traitement terminé")
