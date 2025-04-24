@@ -5,7 +5,7 @@ import math
 from scipy.optimize import curve_fit
 
 # Créer le dossier de sortie s'il n'existe pas
-output_dir = "Videos_Trajectoire"
+output_dir = "Videos_Trajectoire_Gravite"
 if not os.path.exists(output_dir):
     os.makedirs(output_dir)
 
@@ -128,7 +128,7 @@ for video in videos:
 
     # Créer l'objet VideoWriter pour la sortie
     output = cv2.VideoWriter(
-        os.path.join(output_dir, f"Trajectoire_{video}"),
+        os.path.join(output_dir, f"Gravite_{video}"),
         cv2.VideoWriter_fourcc(*'mp4v'),
         fps,
         (width, height)
@@ -256,7 +256,7 @@ for video in videos:
         if params is not None and vitesse_initiale is not None and angle_initial is not None:
             gravity = calculate_gravity(params, vitesse_initiale, angle_initial)
             if gravity is not None:
-                cv2.putText(frame, f"Gravité: {gravity:.2f} m/s²", (40, 170),
+                cv2.putText(frame, f"Gravite: {gravity:.2f} m/s²", (40, 170),
                             cv2.FONT_HERSHEY_SIMPLEX, 0.7, (255, 255, 255), 2)
 
         # Afficher les informations de vitesse

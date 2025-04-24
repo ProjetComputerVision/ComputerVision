@@ -2,16 +2,8 @@ import numpy as np
 import cv2
 import os
 
-
 def warp_video(video_path, output_path, output_size=(1280, 720)):
-    """
-    Transforme une vidéo en vue de dessus en utilisant l'homographie calculée
-
-    Args:
-        video_path: Chemin vers la vidéo d'entrée
-        output_path: Chemin pour la vidéo de sortie
-        output_size: Taille de la vidéo de sortie (largeur, hauteur) en pixels
-    """
+    # Transforme une vidéo en vue de dessus en utilisant l'homographie calculée
     # Charger l'homographie
     try:
         data = np.load("Data/homography_data.npz")
@@ -96,9 +88,6 @@ def warp_video(video_path, output_path, output_size=(1280, 720)):
 
 
 def process_all_videos():
-    """
-    Traite toutes les vidéos du dossier "Videos" et crée des versions transformées
-    """
     # Créer le dossier de sortie s'il n'existe pas
     output_dir = "Videos_Homographie"
     if not os.path.exists(output_dir):
@@ -123,7 +112,6 @@ def process_all_videos():
 
         print(f"\nTraitement de {video}...")
         warp_video(input_path, output_path)
-
 
 if __name__ == "__main__":
     process_all_videos()

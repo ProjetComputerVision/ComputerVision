@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import os
 
-# Chargement des paramètres intrinsèques de la caméra (si nécessaire)
+# Chargement des paramètres intrinsèques de la caméra
 try:
     calib_data = np.load('Data/calibration_data.npz')
     mtx = calib_data['mtx']
@@ -15,8 +15,8 @@ except:
 
 
 def calculate_homography():
-    # 1. Définir les coordonnées des 4 coins du tableau blanc en pixels (à modifier selon votre image)
-    # Format: [coin supérieur gauche, coin supérieur droit, coin inférieur droit, coin inférieur gauche]
+    # 1. Définir les coordonnées des 4 coins du tableau blanc en pixels
+    # Format : [coin supérieur gauche, coin supérieur droit, coin inférieur droit, coin inférieur gauche]
     pts_image = np.array([
         [123, -143],  # Coin supérieur gauche (x, y) en pixels
         [673, 177],  # Coin supérieur droit (x, y) en pixels

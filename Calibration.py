@@ -2,7 +2,7 @@ import numpy as np
 import cv2
 import glob
 
-# Taille de l'échiquier (attention : ce sont les NOMBRES DE COINS INTERNES, pas de cases)
+# Taille de l'échiquier
 nb_corners_x = 10  # Nombre de coins internes sur l'axe X
 nb_corners_y = 7  # Nombre de coins internes sur l'axe Y
 pattern_size = (nb_corners_x, nb_corners_y)
@@ -16,7 +16,7 @@ objpoints = []  # Points du monde réel
 imgpoints = []  # Points détectés
 
 # Charger les images
-images = glob.glob("Checkboard/*.jpg")  # Mets le bon dossier
+images = glob.glob("Checkboard/*.jpg")
 print(f"Nombre d'images trouvées : {len(images)}")
 
 for fname in images:
@@ -46,7 +46,7 @@ cv2.destroyAllWindows()
 
 # Vérification avant calibration
 if len(objpoints) == 0 or len(imgpoints) == 0:
-    print("Erreur : Aucun point détecté ! Vérifie ton damier et tes images.")
+    print("Erreur : Aucun point détecté ! Vérifiez le damier et les images.")
     exit()
 
 # Calibration

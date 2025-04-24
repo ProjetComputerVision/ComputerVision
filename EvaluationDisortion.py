@@ -1,9 +1,7 @@
-# Charger une image de test
 import cv2
-
 from Calibration import mtx, dist, objpoints, imgpoints, rvecs, tvecs
-
-test_img = cv2.imread("Checkboard/Checkboard (1).jpg")  # Utilisez une de vos images d'échiquier
+# Charger une image de test
+test_img = cv2.imread("Checkboard/Checkboard (1).jpg")
 h, w = test_img.shape[:2]
 
 # Calculer la nouvelle matrice de caméra optimale

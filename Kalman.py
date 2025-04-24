@@ -36,10 +36,6 @@ for video in videos:
         print(f"Erreur lors de l'ouverture de {video}")
         continue
 
-    fps = cap.get(cv2.CAP_PROP_FPS)
-    frame_time = 1 / fps
-    centers = []
-
     while True:
         ret, frame = cap.read()
         if not ret:
@@ -60,41 +56,33 @@ for video in videos:
         for contour in contours:
             if cv2.contourArea(contour) < 500:
                 continue
-            (x, y), radius = cv2.minEnclosingCircle(contour)
-            center = (int(x), int(y))
-            centers.append(center)
-            cv2.circle(frame, center, int(radius), (0, 255, 0), 2)
+            x, y, w, h = cv2.boundingRect(contour)
+            center = (x + w // 2, y + h // 2)
+            cv2.rectangle(frame, (x, y), (x + w, y + h), (0, 255, 255), 2)
             cv2.circle(frame, center, 5, (0, 0, 255), -1)
 
-            # Correction du filtre Kalman avec la mesure actuelle
-            kalman.correct(np.array([x, y], np.float32))
+            # Correction du filtre Kalman
+            kalman.correct(np.array([float(center[0]), float(center[1])], np.float32))
 
-            # Prédiction de la position future avec Kalman
+            # Prédiction de la position future
             predicted = kalman.predict()
             predicted_center = (int(predicted[0]), int(predicted[1]))
 
-            # Calcul de la direction à partir de la dernière position et de la position actuelle
             if last_center is not None:
                 dx = center[0] - last_center[0]
                 dy = center[1] - last_center[1]
-                magnitude = np.sqrt(dx**2 + dy**2)
-                if magnitude > 0:  # Si la magnitude est significative
-                    direction = (dx / magnitude, dy / magnitude)  # Normalisation pour obtenir une direction unitaire
-
-                    # Dessiner une flèche représentant la direction du mouvement de la balle
-                    arrow_length = 100  # Longueur de la flèche
+                magnitude = np.sqrt(dx ** 2 + dy ** 2)
+                if magnitude > 0:
+                    direction = (dx / magnitude, dy / magnitude)
+                    arrow_length = 50
                     end_point = (int(center[0] + direction[0] * arrow_length),
-                                int(center[1] + direction[1] * arrow_length))
+                                 int(center[1] + direction[1] * arrow_length))
                     cv2.arrowedLine(frame, center, end_point, (255, 0, 0), 2, tipLength=0.05)
 
-            # Mettre à jour la dernière position de la balle
             last_center = center
 
-            # Boîte de détection autour de la balle
-            cv2.rectangle(frame, (int(x - radius), int(y - radius)), (int(x + radius), int(y + radius)), (0, 255, 255), 2)
-
-        cv2.imshow('Tracking avec filtre Kalman et prediction de la direction', frame)
-        if cv2.waitKey(200) & 0xFF == ord('q'):
+        cv2.imshow('Tracking avec boîte englobante', frame)
+        if cv2.waitKey(100) & 0xFF == ord('q'):
             break
 
     cap.release()
