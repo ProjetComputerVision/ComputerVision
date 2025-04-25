@@ -5,6 +5,9 @@ Test du git
 Calibration.py
 EvaluationDistorsion.py
 Homographie.py
-Videos_Homographie.py
-Videos_Detection_3.py
-Trajectoire_v4.py (il ajoutes les angles)
+Homographie_Videos.py
+Detections_Videos.py
+Trajectoire_Vitesse_Angle.py
+CalculGravite.py
+Kalman.py
+Reconstruction_VideoOrigine.py
